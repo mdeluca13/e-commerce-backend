@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const response = await Product.findByPk(req.params.product_id, {
+    const response = await Product.findByPk(req.params.id, {
       include: [{model: Category}, {model: Tag}],
     });
     return res.json(response);
@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
       if (req.body.tag_id.length) {
         const productTagIdArr = req.body.tag_id.map((tag_id) => {
           return {
-            product_id: product.product_id,
+            product_id: product.id,
             tag_id,
           };
         });
@@ -54,12 +54,12 @@ router.put('/:id', (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
-      product_id: req.params.product_id,
+      product_id: req.params.id,
     },
   })
     .then((product) => {
       // find all associated tags from ProductTag
-      return ProductTag.findAll({ where: { product_id: req.params.product_id } });
+      return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
     .then((productTags) => {
       // get list of current tag_ids
@@ -69,7 +69,7 @@ router.put('/:id', (req, res) => {
         .filter((tag_id) => !productTagIds.includes(tag_id))
         .map((tag_id) => {
           return {
-            product_id: req.params.product_id,
+            product_id: req.params.id,
             tag_id,
           };
         });
@@ -94,7 +94,7 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', async (req, res) => {
   const response = await Product.destroy({
     where: {
-      product_id: req.params.product_id,
+      product_id: req.params.id,
     },
   });
   return res.json(response);
